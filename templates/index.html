@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>动漫人物生成器 - 三关键词定制</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8a2be2;
+            --secondary: #ff6b8b;
+            --accent: #4ecdc4;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --card-bg: rgba(255, 255, 255, 0.08);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: var(--light);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            animation: fadeIn 1s ease-out;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #a9a9c7;
+            max-width: 600px;
+            margin: 0 auto 20px;
+        }
+        
+        .app-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .form-section {
+            flex: 1;
+            min-width: 300px;
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            animation: slideInLeft 0.8s ease-out;
+        }
+        
+        .preview-section {
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            animation: slideInRight 0.8s ease-out;
+        }
+        
+        .preview-box {
+            flex: 1;
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            min-height: 400px;
+        }
+        
+        .prompt-box {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            font-size: 0.9rem;
+            color: #d0d0e7;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: var(--accent);
+            font-size: 1.1rem;
+        }
+        
+        .input-with-icon {
+            position: relative;
+        }
+        
+        .input-with-icon i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary);
+        }
+        
+        input {
+            width: 100%;
+            padding: 14px 14px 14px 45px;
+            border: none;
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 12px;
+            color: var(--light);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.3);
+        }
+        
+        button {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 16px 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(138, 43, 226, 0.3);
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(138, 43, 226, 0.4);
+        }
+        
+        button:disabled {
+            background: linear-gradient(45deg, #999, #777);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .result-image {
+            max-width: 100%;
+            max-height: 500px;
+            border-radius: 15px;
+            display: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .placeholder {
+            text-align: center;
+            color: #888;
+            padding: 40px;
+        }
+        
+        .placeholder i {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .placeholder p {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.3);
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.1);
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        .loading p {
+            font-size: 1.1rem;
+            color: var(--accent);
+        }
+        
+        .actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .action-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+        
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .action-btn i {
+            font-size: 1.2rem;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            color: #a9a9c7;
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 40px;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideInLeft {
+            from { transform: translateX(-50px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes slideInRight {
+            from { transform: translateX(50px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .app-container {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .form-section, .preview-section {
+                width: 100%;
+            }
+        }
+        
+        .keyword-examples {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 15px;
+            margin-top: 25px;
+        }
+        
+        .keyword-examples h3 {
+            color: var(--accent);
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .keywords-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        
+        .example-keyword {
+            background: rgba(78, 205, 196, 0.2);
+            color: var(--accent);
+            padding: 8px;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .example-keyword:hover {
+            background: rgba(78, 205, 196, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .error-message {
+            color: #ff6b8b;
+            background: rgba(255, 107, 139, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>动漫人物生成器</h1>
+            <p class="subtitle">输入三个关键词，生成专属动漫人物形象</p>
+        </header>
+        
+        <div class="app-container">
+            <div class="form-section">
+                <h2><i class="fas fa-keyboard"></i> 输入关键词</h2>
+                <p style="margin: 15px 0 25px; color: #b0b0d0;">输入三个关键词定制你的动漫角色</p>
+                
+                <div class="form-group">
+                    <label for="keyword1">关键词 1</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-1"></i>
+                        <input type="text" id="keyword1" placeholder="例如: 高个子" value="高个子">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="keyword2">关键词 2</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-2"></i>
+                        <input type="text" id="keyword2" placeholder="例如: 长腿" value="长腿">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="keyword3">关键词 3</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-3"></i>
+                        <input type="text" id="keyword3" placeholder="例如: 军装" value="军装">
+                    </div>
+                </div>
+                
+                <button id="generate-btn">
+                    <i class="fas fa-magic"></i> 生成动漫人物
+                </button>
+                
+                <div id="error-message" class="error-message">
+                    <i class="fas fa-exclamation-circle"></i> <span id="error-text"></span>
+                </div>
+                
+                <div class="keyword-examples">
+                    <h3><i class="fas fa-lightbulb"></i> 关键词示例</h3>
+                    <div class="keywords-grid">
+                        <div class="example-keyword" data-target="萝莉">萝莉</div>
+                        <div class="example-keyword" data-target="御姐">御姐</div>
+                        <div class="example-keyword" data-target="和服">和服</div>
+                        <div class="example-keyword" data-target="武士刀">武士刀</div>
+                        <div class="example-keyword" data-target="魔法少女">魔法少女</div>
+                        <div class="example-keyword" data-target="机械臂">机械臂</div>
+                        <div class="example-keyword" data-target="龙族">龙族</div>
+                        <div class="example-keyword" data-target="天使翅膀">天使翅膀</div>
+                        <div class="example-keyword" data-target="未来风格">未来风格</div>
+                        <div class="example-keyword" data-target="古风">古风</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="preview-section">
+                <div class="preview-box">
+                    <div class="placeholder" id="image-placeholder">
+                        <i class="fas fa-image"></i>
+                        <p>生成的动漫人物将显示在这里</p>
+                    </div>
+                    <img id="result-image" class="result-image" alt="生成的动漫人物">
+                    <div class="loading" id="loading">
+                        <div class="spinner"></div>
+                        <p>正在生成动漫人物，请稍候...</p>
+                        <p>这可能需要10-30秒时间</p>
+                    </div>
+                </div>
+                
+                <div class="prompt-box">
+                    <h3><i class="fas fa-comment-alt"></i> 生成提示</h3>
+                    <div id="prompt-text" style="margin-top: 15px; font-style: italic; color: #b0b0d0;">
+                        提示词将根据您的关键词显示在这里
+                    </div>
+                </div>
+                
+                <div class="actions" id="action-buttons" style="display: none;">
+                    <button class="action-btn" id="download-btn">
+                        <i class="fas fa-download"></i> 下载图片
+                    </button>
+                    <button class="action-btn" id="regenerate-btn">
+                        <i class="fas fa-redo"></i> 重新生成
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>动漫人物生成器 &copy; 2023 | 使用三关键词定制你的专属动漫角色</p>
+        </footer>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const generateBtn = document.getElementById('generate-btn');
+            const keyword1Input = document.getElementById('keyword1');
+            const keyword2Input = document.getElementById('keyword2');
+            const keyword3Input = document.getElementById('keyword3');
+            const resultImage = document.getElementById('result-image');
+            const imagePlaceholder = document.getElementById('image-placeholder');
+            const loading = document.getElementById('loading');
+            const actionButtons = document.getElementById('action-buttons');
+            const promptText = document.getElementById('prompt-text');
+            const downloadBtn = document.getElementById('download-btn');
+            const regenerateBtn = document.getElementById('regenerate-btn');
+            const errorMessage = document.getElementById('error-message');
+            const errorText = document.getElementById('error-text');
+            
+            // 示例关键词点击事件
+            document.querySelectorAll('.example-keyword').forEach(tag => {
+                tag.addEventListener('click', () => {
+                    const keyword = tag.getAttribute('data-target');
+                    
+                    // 找到第一个空的关键词输入框
+                    if (!keyword1Input.value.trim()) {
+                        keyword1Input.value = keyword;
+                    } else if (!keyword2Input.value.trim()) {
+                        keyword2Input.value = keyword;
+                    } else if (!keyword3Input.value.trim()) {
+                        keyword3Input.value = keyword;
+                    } else {
+                        // 所有输入框都有值，替换最后一个
+                        keyword3Input.value = keyword;
+                    }
+                });
+            });
+            
+            // 生成按钮点击事件
+            generateBtn.addEventListener('click', generateCharacter);
+            
+            // 重新生成按钮
+            regenerateBtn.addEventListener('click', generateCharacter);
+            
+            // 下载按钮
+            downloadBtn.addEventListener('click', function() {
+                if (resultImage.src) {
+                    const link = document.createElement('a');
+                    link.href = resultImage.src;
+                    link.download = '动漫人物_' + new Date().toISOString().slice(0, 10) + '.png';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+            });
+            
+            // 生成动漫人物
+            function generateCharacter() {
+                const keyword1 = keyword1Input.value.trim();
+                const keyword2 = keyword2Input.value.trim();
+                const keyword3 = keyword3Input.value.trim();
+                
+                // 验证输入
+                if (!keyword1 || !keyword2 || !keyword3) {
+                    showError('请填写所有三个关键词');
+                    return;
+                }
+                
+                // 清除错误信息
+                hideError();
+                
+                // 显示加载状态
+                imagePlaceholder.style.display = 'none';
+                resultImage.style.display = 'none';
+                loading.style.display = 'block';
+                actionButtons.style.display = 'none';
+                generateBtn.disabled = true;
+                
+                // 构建提示词（在本地显示）
+                const prompt = `动漫风格人物无背景全身照，特征：${keyword1}，${keyword2}，${keyword3}`;
+                promptText.textContent = prompt;
+                
+                // 发送请求到后端
+                fetch('/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        keyword1: keyword1,
+                        keyword2: keyword2,
+                        keyword3: keyword3
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => {
+                            throw new Error(err.error || '服务器返回错误');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        // 添加时间戳参数防止浏览器缓存
+                        const timestamp = new Date().getTime();
+                        const uniqueUrl = `${data.image_url}?t=${timestamp}`;
+                        
+                        // 显示生成的图片
+                        resultImage.src = uniqueUrl;
+                        resultImage.onload = function() {
+                            // 图片加载成功后显示
+                            resultImage.style.display = 'block';
+                            
+                            // 显示操作按钮
+                            actionButtons.style.display = 'flex';
+                        };
+                        
+                        // 处理图片加载失败
+                        resultImage.onerror = function() {
+                            console.error('图片加载失败:', uniqueUrl);
+                            showError('图片加载失败，请尝试重新生成');
+                            imagePlaceholder.style.display = 'block';
+                        };
+                    } else {
+                        throw new Error(data.error || '生成失败');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showError('生成失败: ' + error.message);
+                    imagePlaceholder.style.display = 'block';
+                })
+                .finally(() => {
+                    loading.style.display = 'none';
+                    generateBtn.disabled = false;
+                });
+            }
+            
+            // 显示错误信息
+            function showError(message) {
+                errorText.textContent = message;
+                errorMessage.style.display = 'block';
+                
+                // 3秒后自动隐藏错误信息
+                setTimeout(hideError, 5000);
+            }
+            
+            // 隐藏错误信息
+            function hideError() {
+                errorMessage.style.display = 'none';
+            }
+            
+            // 初始生成一个示例
+            setTimeout(generateCharacter, 1000);
+        });
+    </script>
+</body>
+</html>
